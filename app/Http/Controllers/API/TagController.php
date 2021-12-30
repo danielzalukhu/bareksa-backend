@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\News;
 use App\Models\Tag;
@@ -25,7 +26,7 @@ class TagController extends Controller
         
         $formRequest = [
             'news_id' => 'required|integer',
-            'hastag' => 'required|min:6|max:20'
+            'hastag' => 'required|max:20'
         ];
 
         $validate = Validator::make($data, $formRequest);

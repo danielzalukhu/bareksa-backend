@@ -18,9 +18,12 @@ use File;
 class NewsController extends Controller
 {
     public function index(Request $request)
-    {
+    {        
+        $topic_id   = $request->query('topic_id');
+        $status = $request->query('status');
+
         $newsCache = Redis::get('all news : ');
-        // dd($newsCache);
+        
         if (isset($newsCache)) {
             $news_ = json_decode($newsCache, FALSE);
 
@@ -29,22 +32,19 @@ class NewsController extends Controller
                 'message' => 'data from redis',
                 'data' => $news_
             ]); 
-        }
+        } 
 
         $news = News::query();
 
-        $topic_id   = $request->query('topic_id');
-        $status = $request->query('status');
-
         $news->when($topic_id, function($query) use ($topic_id) {
-            return $query->where("topic_id", '=', $topic_id);
+            return $query->where("topic_id", '=', $topic_id);    
         });
 
         $news->when($status, function($query) use ($status) {
             return $query->where("status", '=', $status);
         });
 
-        Redis::set('all news : ', json_encode($news->paginate(100)));
+        Redis::set('all news : ', json_encode($news->paginate(10)));
 
         return response()->json([
             'status' => 'success',
